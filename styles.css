@@ -1,10 +1,10 @@
 /* ================================================================
-   styles.css — Sorpresa Especial 💝  v4.1
-   Fixes:
-   ✅ Texto sin recortes (overflow visible, line-height, text-rendering)
-   ✅ Tarjeta sin overflow hidden para no clipear acentos
-   ✅ Visuales del modo chaos (prank screen roja parpadeante)
-   ✅ Música btn con glow cuando activo
+   styles.css — Sorpresa Especial 💝  v5.0
+   ✅ FIX definitivo texto cortado (line-height + padding + clip)
+   ✅ Fuentes más grandes (accesibilidad)
+   ✅ Trivia card + celebrate-flash (phonk)
+   ✅ Chaos visual (terminal rojo)
+   ✅ 4 modos de música
    ================================================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Space+Mono:wght@400;700&display=swap');
@@ -19,10 +19,10 @@ body {
         radial-gradient(circle at 2px 2px,   rgba(255,255,255,0.04)   1px, transparent 0);
     background-size: 100% 100%, 100% 100%, 100% 100%, 32px 32px;
     font-family: 'Syne', system-ui, sans-serif;
-    /* ★ FIX: NO overflow-x:hidden en body — clipa acentos con border-radius */
+    /* NO overflow-x:hidden aquí — clipa los ascendentes/descendentes con border-radius */
 }
 
-/* ─── MAIN CARD ─────────────────────────────────────────────────── */
+/* ─── CARD ─────────────────────────────────────────────────────── */
 .card-main {
     background: #ffffff;
     box-shadow:
@@ -31,71 +31,118 @@ body {
         inset 0 1px 0 rgba(255,255,255,0.9);
     backface-visibility: hidden;
     will-change: transform;
-    /* ★ FIX: overflow visible para que acentos no queden cortados
-       Se usa clip-path solo para las esquinas redondeadas si es necesario */
+    /* ★ overflow visible para NO clipear descendentes ni ascendentes de la Syne */
     overflow: visible;
 }
 
-/* ─── TYPOGRAPHY ─────────────────────────────────────────────────── */
-.creator-title {
+/* ─── TIPOGRAFÍA — ESCALA ACCESIBLE ────────────────────────────── */
+
+/*
+  ★ FIX DEFINITIVO texto cortado:
+  La fuente Syne en bold tiene descendentes y ascendentes altos.
+  La combinación border-radius + overflow:hidden en contenedores padres
+  clipa el último píxel. Solución:
+    • line-height generoso (1.15 mínimo en títulos)
+    • padding-bottom para descendentes
+    • overflow: visible en todos los contenedores tipográficos
+    • clip-path: none
+    • text-rendering: optimizeLegibility
+*/
+
+/* Títulos de página (h1, h2) */
+.page-title {
     font-family: 'Syne', sans-serif;
+    font-size: clamp(1.6rem, 4.5vw, 2.2rem);   /* ★ MÁS GRANDE */
+    font-weight: 900;
+    color: #1e293b;
+    line-height: 1.18;          /* ★ espacio extra arriba/abajo */
     letter-spacing: -0.5px;
-    /* ★ FIX: line-height generoso para acentos/tildes superiores */
-    line-height: 1.15;
-    /* ★ FIX: overflow visible para que tildes no se corten */
+    padding-top: 4px;           /* ★ espacio para ascendentes */
+    padding-bottom: 3px;        /* ★ espacio para descendentes */
     overflow: visible;
-    /* ★ FIX: padding top por si las tildes se cortan con border-radius */
-    padding-top: 2px;
+    clip-path: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
 }
 
-/* ★ FIX: El h1 del título no debe clipear */
-#ui-title {
-    overflow: visible;
-    line-height: 1.1;
-    padding-top: 4px;
-    padding-bottom: 2px;
-    margin-top: 0;
+/* Descripción secundaria */
+.sub-desc {
+    font-size: clamp(0.65rem, 2vw, 0.78rem);
 }
 
-/* ★ FIX: El creator view debe tener padding-top para no clipear el emoji */
-#creator-view,
-#receiver-view {
+/* Cuerpo de texto (mensajes, juegos) */
+.body-text {
+    font-size: clamp(0.95rem, 2.8vw, 1.1rem);   /* ★ MÁS GRANDE */
+    line-height: 1.6;
     overflow: visible;
 }
 
+/* Texto de formulario (textarea, select) */
+.form-text {
+    font-size: clamp(0.9rem, 2.5vw, 1rem);       /* ★ MÁS GRANDE */
+}
+
+/* Hint / micro-texto */
+.hint-text {
+    font-size: clamp(0.72rem, 2vw, 0.82rem);
+}
+
+/* Mono / terminal */
+.mono-text {
+    font-family: 'Space Mono', 'Courier New', monospace;
+    font-size: clamp(0.68rem, 1.8vw, 0.75rem);
+}
+
+/* Botón principal */
+.btn-text {
+    font-size: clamp(0.82rem, 2.2vw, 0.92rem);
+    letter-spacing: 0.08em;
+}
+.btn-text-lg {
+    font-size: clamp(1rem, 2.8vw, 1.2rem);
+    letter-spacing: 0.06em;
+}
+
+/* ─── LABEL FIELDS ─────────────────────────────────────────────── */
 .label-field {
     display: block;
-    font-size: 10px; font-weight: 700;
+    font-size: clamp(0.65rem, 1.8vw, 0.72rem);
+    font-weight: 700;
     color: #94a3b8;
-    text-transform: uppercase; letter-spacing: 0.1em;
-    margin-bottom: 0.3rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: 0.35rem;
     text-rendering: optimizeLegibility;
 }
 
+/* ─── OPTIONAL BADGE ────────────────────────────────────────────── */
 .optional-badge {
-    font-size: 9px; font-weight: 700;
+    font-size: clamp(0.65rem, 1.8vw, 0.72rem);
+    font-weight: 700;
     color: #ec4899;
     background: #fce7f3;
-    padding: 2px 8px; border-radius: 99px;
-    white-space: nowrap; letter-spacing: 0.03em;
+    padding: 2px 9px;
+    border-radius: 99px;
+    white-space: nowrap;
+    letter-spacing: 0.02em;
 }
 
-/* ─── FORM ──────────────────────────────────────────────────────── */
+/* ─── FORM ELEMENTS ─────────────────────────────────────────────── */
 .select-field {
     appearance: none;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23f9a8d4' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
     background-repeat: no-repeat;
     background-position: right 1rem center;
-    padding-right: 2.5rem !important;
+    padding: 0.85rem 2.5rem 0.85rem 1rem;
+    font-size: clamp(0.9rem, 2.5vw, 1rem);   /* ★ MÁS GRANDE */
     cursor: pointer;
 }
 
-/* ─── BOTÓN PRIMARIO ─────────────────────────────────────────────── */
+/* ─── BOTONES ────────────────────────────────────────────────────── */
 .btn-primary {
     background: linear-gradient(135deg, #ec4899 0%, #f43f5e 100%);
-    position: relative; overflow: hidden;
+    position: relative;
+    overflow: hidden;
     transition: all 0.2s ease;
 }
 .btn-primary::before {
@@ -116,7 +163,6 @@ body {
     color: rgba(255,255,255,0.75);
     background: rgba(255,255,255,0.08);
     border-color: rgba(255,255,255,0.15);
-    font-size: 11px;
 }
 .lang-btn:hover { background: rgba(255,255,255,0.18); color: #fff; }
 .lang-btn.active {
@@ -131,8 +177,8 @@ body {
     background: rgba(255,255,255,0.10);
     border: 1px solid rgba(255,255,255,0.18);
     color: white;
-    font-size: 1.15rem;
-    width: 44px; height: 44px;
+    font-size: 1.2rem;
+    width: 46px; height: 46px;
     border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
     backdrop-filter: blur(8px);
@@ -147,25 +193,23 @@ body {
 }
 .music-btn:active { transform: scale(0.95); }
 
-/* ─── TERMINAL / PRANK TEXT ─────────────────────────────────────── */
+/* ─── TERMINAL ───────────────────────────────────────────────────── */
 /*
-  ★ FIX DEFINITIVO del texto pegado:
-    white-space: pre-wrap  → preserva \n Y espacios, permite word-wrap
-    word-break: break-word → líneas muy largas se rompen
-    JS usa: el.textContent += char  (NO innerText)
+  ★ FIX TEXTO: white-space: pre-wrap + textContent en JS (no innerText)
+  pre-wrap → preserva \n como saltos de línea reales Y permite wrapping
 */
-#prank-text {
+.terminal-box {
     background-color: #020617;
     color: #4ade80;
     font-family: 'Space Mono', 'Courier New', monospace;
-    font-size: 12px;
-    line-height: 1.9;
+    font-size: clamp(11px, 2.4vw, 13px);   /* ★ más legible */
+    line-height: 1.95;
     letter-spacing: 0.02em;
     text-shadow: 0 0 8px rgba(74,222,128,0.55);
     border: 1px solid rgba(74,222,128,0.2);
-    min-height: 150px;
+    min-height: 155px;
 
-    /* ★ CRÍTICO: pre-wrap preserva \n como saltos de línea */
+    /* ★ CRÍTICO — preservar saltos de línea */
     white-space: pre-wrap;
     word-break: break-word;
     overflow-wrap: break-word;
@@ -174,19 +218,19 @@ body {
     animation: terminalGlow 2.5s ease-in-out infinite;
 }
 
-/* ★ Estado caótico del terminal (se activa con JS) */
-#prank-text.chaos-mode {
+/* Modo chaos del terminal (texto rojo, parpadeo) */
+.terminal-box.chaos-mode {
     color: #ff4d4d;
-    text-shadow: 0 0 10px rgba(255,77,77,0.7), 0 0 20px rgba(255,0,0,0.4);
-    border-color: rgba(255,77,77,0.4);
-    animation: terminalChaos 0.4s ease-in-out infinite;
+    text-shadow: 0 0 10px rgba(255,77,77,0.70), 0 0 22px rgba(255,0,0,0.35);
+    border-color: rgba(255,77,77,0.45);
+    animation: terminalChaos 0.45s ease-in-out infinite;
 }
 #prank-screen.chaos-mode .animate-spin-slow {
-    animation: spin 0.5s linear infinite; /* gira más rápido */
-    filter: hue-rotate(180deg);           /* se vuelve rojo */
+    animation: spin 0.55s linear infinite !important;
+    filter: hue-rotate(180deg) saturate(2);
 }
 
-/* ─── TERMINAL CURSOR ───────────────────────────────────────────── */
+/* ─── TERMINAL CURSOR ────────────────────────────────────────────── */
 .terminal-cursor::after {
     content: '▋';
     animation: blink 0.75s step-end infinite;
@@ -194,12 +238,13 @@ body {
     text-shadow: 0 0 6px rgba(74,222,128,0.9);
 }
 
-/* ─── PROGRESS BAR ──────────────────────────────────────────────── */
+/* ─── PROGRESS BAR ───────────────────────────────────────────────── */
 .progress-glow {
     background: linear-gradient(90deg, #ef4444 0%, #f97316 55%, #fbbf24 100%);
     box-shadow: 0 0 12px rgba(239,68,68,0.65);
     transition: width 0.04s linear;
-    position: relative; border-radius: 999px;
+    position: relative;
+    border-radius: 999px;
 }
 .progress-glow::after {
     content: '';
@@ -213,9 +258,12 @@ body {
 .final-message-box { position: relative; }
 .final-message-box::before {
     content: '"';
-    position: absolute; top:-10px; left:10px;
-    font-size: 3.2rem; color: #fce7f3;
-    font-family: Georgia, serif; line-height: 1; pointer-events: none;
+    position: absolute; top:-12px; left:10px;
+    font-size: 3.5rem;
+    color: #fce7f3;
+    font-family: Georgia, serif;
+    line-height: 1;
+    pointer-events: none;
 }
 
 /* ─── GAME CARD ─────────────────────────────────────────────────── */
@@ -224,19 +272,53 @@ body {
     border: 1.5px solid #e2e8f0;
 }
 
-/* ─── GAME TAP BUTTON ───────────────────────────────────────────── */
+/* ─── TRIVIA CARD ───────────────────────────────────────────────── */
+.trivia-card {
+    background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
+    border: 1.5px solid #d8b4fe;
+}
+.trivia-btn {
+    background: white;
+    border: 1.5px solid #e2e8f0;
+    color: #334155;
+    font-size: clamp(0.88rem, 2.4vw, 0.98rem);  /* ★ MÁS GRANDE */
+    transition: all 0.18s ease;
+    cursor: pointer;
+}
+.trivia-btn:hover:not(:disabled) {
+    background: #f8f0ff;
+    border-color: #c084fc;
+    color: #7c3aed;
+    transform: translateX(3px);
+}
+.trivia-btn:disabled { cursor: default; opacity: 0.85; }
+.trivia-correct {
+    background: #dcfce7 !important;
+    border-color: #4ade80 !important;
+    color: #166534 !important;
+}
+.trivia-wrong {
+    background: #fee2e2 !important;
+    border-color: #f87171 !important;
+    color: #991b1b !important;
+}
+
+/* ─── GAME TAP BTN ──────────────────────────────────────────────── */
 .game-tap-btn {
     display: block;
     transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
     -webkit-tap-highlight-color: transparent;
-    cursor: pointer; user-select: none; -webkit-user-select: none;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
 }
-.game-tap-active { transform: scale(0.70) rotate(-12deg) !important; }
+.game-tap-active { transform: scale(0.68) rotate(-14deg) !important; }
 
-/* ─── BTN NO FUGITIVO ───────────────────────────────────────────── */
+/* ─── BTN NO ────────────────────────────────────────────────────── */
 #btn-no {
     transition: all 0.18s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    cursor: pointer; position: absolute;
+    cursor: pointer;
+    position: absolute;
 }
 .btn-no-surrender {
     transition: all 0.4s ease !important;
@@ -247,23 +329,35 @@ body {
 /* ─── STATS TRIGGER ─────────────────────────────────────────────── */
 .stats-trigger { transition: color 0.3s; user-select: none; -webkit-user-select: none; }
 
+/* ─── CELEBRATE FLASH (trivia correcto + phonk) ─────────────────── */
+@keyframes celebrateFlash {
+    0%   { box-shadow: 0 0 0   0  rgba(255,215,0,0),   0 30px 70px rgba(0,0,0,0.40); }
+    20%  { box-shadow: 0 0 50px 20px rgba(255,215,0,0.6), 0 0 80px rgba(255,100,0,0.4); }
+    40%  { box-shadow: 0 0 40px 15px rgba(255,0,100,0.5),  0 0 60px rgba(100,0,255,0.3); }
+    60%  { box-shadow: 0 0 55px 25px rgba(0,200,255,0.5),  0 0 80px rgba(255,200,0,0.4); }
+    80%  { box-shadow: 0 0 45px 18px rgba(0,255,100,0.5),  0 0 70px rgba(255,50,200,0.4); }
+    100% { box-shadow: 0 0 0   0  rgba(0,0,0,0),         0 30px 70px rgba(0,0,0,0.40); }
+}
+.celebrate-flash {
+    animation: celebrateFlash 2s ease-in-out !important;
+}
+
 /* ═══════════════════════════════════════════════════════════════════
    KEYFRAMES
    ═══════════════════════════════════════════════════════════════════ */
 
-/* Shake principal */
 @keyframes shake {
-    0%   { transform: translate(2px, 1px)   rotate(0deg);    }
+    0%   { transform: translate(2px,  1px)  rotate(0deg);    }
     10%  { transform: translate(-2px,-2px)  rotate(-1.5deg); }
     20%  { transform: translate(-3px, 0px)  rotate(1deg);    }
-    30%  { transform: translate(0px,  2px)  rotate(0deg);    }
-    40%  { transform: translate(1px, -1px)  rotate(1.5deg);  }
+    30%  { transform: translate( 0px, 2px)  rotate(0deg);    }
+    40%  { transform: translate( 1px,-1px)  rotate(1.5deg);  }
     50%  { transform: translate(-2px, 2px)  rotate(-1deg);   }
     60%  { transform: translate(-3px, 1px)  rotate(0deg);    }
-    70%  { transform: translate(3px,  1px)  rotate(-1.5deg); }
+    70%  { transform: translate( 3px, 1px)  rotate(-1.5deg); }
     80%  { transform: translate(-2px,-1px)  rotate(1deg);    }
-    90%  { transform: translate(2px,  2px)  rotate(0deg);    }
-    100% { transform: translate(1px, -2px)  rotate(-1deg);   }
+    90%  { transform: translate( 2px, 2px)  rotate(0deg);    }
+    100% { transform: translate( 1px,-2px)  rotate(-1deg);   }
 }
 
 @keyframes spin {
@@ -273,17 +367,17 @@ body {
 
 @keyframes giftBounce {
     0%,100% { transform: translateY(0)     scale(1);    }
-    35%      { transform: translateY(-22px) scale(1.10); }
-    65%      { transform: translateY(-10px) scale(1.05); }
+    35%     { transform: translateY(-24px) scale(1.11); }
+    65%     { transform: translateY(-11px) scale(1.06); }
 }
 
 @keyframes pulsePink {
-    0%,100% { box-shadow: 0 0 0 0   rgba(236,72,153,0.55), 0 8px 25px rgba(244,63,94,0.35); }
-    50%      { box-shadow: 0 0 0 14px rgba(236,72,153,0),   0 12px 40px rgba(244,63,94,0.55); }
+    0%,100% { box-shadow: 0 0 0   0   rgba(236,72,153,0.55), 0 8px 25px rgba(244,63,94,0.35); }
+    50%     { box-shadow: 0 0 0 16px  rgba(236,72,153,0),    0 12px 40px rgba(244,63,94,0.55); }
 }
 
 @keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(22px); }
+    from { opacity: 0; transform: translateY(24px); }
     to   { opacity: 1; transform: translateY(0);    }
 }
 
@@ -294,33 +388,33 @@ body {
 
 @keyframes heartbeat {
     0%,100% { transform: scale(1);    }
-    14%     { transform: scale(1.20); }
+    14%     { transform: scale(1.22); }
     28%     { transform: scale(1);    }
-    42%     { transform: scale(1.14); }
+    42%     { transform: scale(1.15); }
     70%     { transform: scale(1);    }
 }
 
 @keyframes float {
-    0%,100% { transform: translateY(0);    }
-    50%     { transform: translateY(-9px); }
+    0%,100% { transform: translateY(0);     }
+    50%     { transform: translateY(-10px); }
 }
 
-/* Brillo suave del terminal (modo normal) */
+/* Brillo verde suave (terminal normal) */
 @keyframes terminalGlow {
-    0%,100% { box-shadow: 0 0 6px  rgba(74,222,128,0.2),  inset 0 0 8px  rgba(74,222,128,0.05); }
+    0%,100% { box-shadow: 0 0 6px  rgba(74,222,128,0.20), inset 0 0 8px  rgba(74,222,128,0.05); }
     50%     { box-shadow: 0 0 20px rgba(74,222,128,0.45), inset 0 0 18px rgba(74,222,128,0.12); }
 }
 
-/* Brillo rojo caótico (modo chaos) */
+/* Brillo rojo caótico (terminal prank) */
 @keyframes terminalChaos {
-    0%   { box-shadow: 0 0 10px rgba(255,50,50,0.6),  inset 0 0 15px rgba(255,0,0,0.1);  border-color: rgba(255,77,77,0.5); }
-    25%  { box-shadow: 0 0 25px rgba(255,150,0,0.5),  inset 0 0 20px rgba(255,100,0,0.1); border-color: rgba(255,150,0,0.5); }
-    50%  { box-shadow: 0 0 15px rgba(255,50,50,0.7),  inset 0 0 12px rgba(255,0,0,0.15); border-color: rgba(255,50,50,0.7); }
-    75%  { box-shadow: 0 0 30px rgba(200,0,200,0.4),  inset 0 0 20px rgba(200,0,200,0.08); border-color: rgba(200,0,200,0.5); }
-    100% { box-shadow: 0 0 10px rgba(255,50,50,0.6),  inset 0 0 15px rgba(255,0,0,0.1);  border-color: rgba(255,77,77,0.5); }
+    0%   { box-shadow: 0 0 12px rgba(255,50,50,0.65), inset 0 0 16px rgba(255,0,0,0.10);   border-color: rgba(255,77,77,0.55);  }
+    25%  { box-shadow: 0 0 28px rgba(255,150,0,0.55), inset 0 0 22px rgba(255,100,0,0.10); border-color: rgba(255,150,0,0.55); }
+    50%  { box-shadow: 0 0 18px rgba(255,50,50,0.75), inset 0 0 14px rgba(255,0,0,0.15);   border-color: rgba(255,50,50,0.70); }
+    75%  { box-shadow: 0 0 32px rgba(200,0,200,0.45), inset 0 0 22px rgba(200,0,200,0.08); border-color: rgba(200,0,200,0.55); }
+    100% { box-shadow: 0 0 12px rgba(255,50,50,0.65), inset 0 0 16px rgba(255,0,0,0.10);   border-color: rgba(255,77,77,0.55); }
 }
 
-/* ─── CLASES ─────────────────────────────────────────────────────── */
+/* ─── CLASES UTILITARIAS ─────────────────────────────────────────── */
 .shake-heavy       { animation: shake      0.09s infinite; }
 .animate-spin-slow { animation: spin       3.5s linear infinite; }
 .gift-bounce       { animation: giftBounce 2s ease-in-out infinite; }
@@ -329,26 +423,32 @@ body {
 .heartbeat         { animation: heartbeat  1.9s ease-in-out infinite; }
 .float-anim        { animation: float      3s ease-in-out infinite; }
 
-/* ─── SCREEN ANIMATIONS ──────────────────────────────────────────── */
-#result-area:not(.hidden)   { animation: fadeInUp 0.4s ease-out; }
-#final-screen:not(.hidden)  { animation: fadeInUp 0.5s ease-out; }
-#celebrate-msg:not(.hidden) { animation: fadeInUp 0.4s ease-out; }
-#tap-done-msg:not(.hidden)  { animation: fadeInUp 0.4s ease-out; }
-#hug-done-msg:not(.hidden)  { animation: fadeInUp 0.4s ease-out; }
+/* ─── SCREEN ENTRY ANIMATIONS ────────────────────────────────────── */
+#result-area:not(.hidden)    { animation: fadeInUp 0.4s ease-out; }
+#final-screen:not(.hidden)   { animation: fadeInUp 0.5s ease-out; }
+#celebrate-msg:not(.hidden)  { animation: fadeInUp 0.4s ease-out; }
+#tap-done-msg:not(.hidden)   { animation: fadeInUp 0.4s ease-out; }
+#hug-done-msg:not(.hidden)   { animation: fadeInUp 0.4s ease-out; }
+#trivia-area:not(.hidden)    { animation: fadeInUp 0.5s ease-out; }
+#trivia-result:not(.hidden)  { animation: fadeInUp 0.4s ease-out; }
 
 /* ─── RESPONSIVE ─────────────────────────────────────────────────── */
 @media (max-width: 500px) {
-    /* ★ FIX para móvil: más padding top en la tarjeta para acentos */
-    .card-main { padding: 1.6rem 1.4rem 1.5rem; border-radius: 2rem; }
+    .card-main { border-radius: 1.8rem; }
 
-    #prank-text {
-        font-size: 10.5px !important;
-        line-height: 1.75 !important;
-        padding: 0.8rem !important;
+    /* ★ En móvil reducir un poco las fuentes pero MANTENER legibilidad */
+    .page-title { font-size: 1.55rem; }
+    .body-text  { font-size: 0.95rem; }
+    .form-text  { font-size: 0.88rem; }
+
+    .terminal-box {
+        font-size: 10px !important;
+        line-height: 1.80 !important;
+        padding: 0.75rem !important;
         min-height: 130px !important;
     }
 
-    /* En móvil el btn-no es estático */
+    /* En móvil btn-no es estático (pantalla pequeña) */
     #btn-no-wrapper {
         flex-wrap: wrap; gap: 0.75rem;
         height: auto !important; overflow: visible;
@@ -359,13 +459,13 @@ body {
         transform: none !important;
     }
 
-    .creator-title { font-size: 1.55rem; line-height: 1.1; }
-    .music-btn     { width: 38px; height: 38px; font-size: 1rem; }
+    .music-btn { width: 40px; height: 40px; font-size: 1.05rem; }
+    .trivia-btn { font-size: 0.85rem; }
 }
 
 @media (max-width: 360px) {
-    .card-main  { padding: 1.1rem; }
-    #prank-text { font-size: 9.5px !important; }
+    .terminal-box { font-size: 9px !important; }
+    .page-title   { font-size: 1.35rem; }
 }
 
 /* ─── SCROLLBAR ──────────────────────────────────────────────────── */
@@ -373,3 +473,9 @@ body {
 ::-webkit-scrollbar-track { background: #f1f5f9; }
 ::-webkit-scrollbar-thumb { background: #f9a8d4; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #ec4899; }
+
+/* ─── EXTRAS ─────────────────────────────────────────────────────── */
+/* Selects y textareas sin borde focus outline nativo */
+select:focus, textarea:focus, input:focus { outline: none; }
+/* iOS tap highlight */
+button, select, textarea, input { -webkit-tap-highlight-color: transparent; }
