@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sorpresa Especial 🎁</title>
-    <meta property="og:title"       content="💝 Tienes una sorpresa especial">
-    <meta property="og:description" content="Alguien pensó en ti hoy y te envió una dedicatoria especial. ¡Toca para abrirla! ❤️">
-    <meta property="og:image"       content="https://thumbs.dreamstime.com/b/d-kawaii-valentines-day-gift-box-red-ribbon-heart-shaped-candies-golden-coins-soft-pink-clouds-glowing-stars-confetti-421078191.jpg">
+
+    <!-- Open Graph -->
+    <meta property="og:title"        content="💝 Tienes una sorpresa especial">
+    <meta property="og:description"  content="Alguien pensó en ti hoy y te envió una dedicatoria especial. ¡Toca para abrirla! ❤️">
+    <meta property="og:image"        content="https://thumbs.dreamstime.com/b/d-kawaii-valentines-day-gift-box-red-ribbon-heart-shaped-candies-golden-coins-soft-pink-clouds-glowing-stars-confetti-421078191.jpg">
     <meta property="og:image:width"  content="1200">
     <meta property="og:image:height" content="630">
     <meta property="og:type"         content="website">
@@ -19,20 +21,81 @@
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Firebase SDKs (compat v9) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-database-compat.js"></script>
 </head>
 
 <body class="min-h-screen flex items-center justify-center p-3 overflow-x-hidden">
 
-    <!-- LANG -->
+    <!-- ═══ LANG BUTTONS ═══ -->
     <div class="fixed top-4 right-4 z-50 flex gap-2">
         <button onclick="changeLang('es')" id="btn-lang-es" class="lang-btn active px-4 py-2 rounded-full text-sm font-bold transition border backdrop-blur-sm">🇲🇽 ES</button>
         <button onclick="changeLang('en')" id="btn-lang-en" class="lang-btn px-4 py-2 rounded-full text-sm font-bold transition border backdrop-blur-sm">🇺🇸 EN</button>
     </div>
 
-    <!-- MUSIC -->
+    <!-- ═══ MUSIC BUTTON (bottom-left) ═══ -->
     <button id="music-btn" onclick="toggleMusic()" class="music-btn fixed bottom-6 left-4 z-50" title="Música">🎵</button>
 
-    <!-- MAIN CARD -->
+    <!-- ═══ DATA TABLE BUTTON (bottom-right) ═══ -->
+    <button id="dt-btn" onclick="showDataTable()" class="dt-fab fixed bottom-6 right-4 z-50" title="Panel de datos">📊</button>
+
+    <!-- ═══════════════════════════════════════════════
+         DATA TABLE MODAL
+    ════════════════════════════════════════════════ -->
+    <div id="data-modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-3">
+        <!-- Overlay -->
+        <div class="absolute inset-0 dt-overlay" onclick="closeDataTable()"></div>
+
+        <!-- Panel -->
+        <div class="dt-panel relative w-full max-w-2xl max-h-[90vh] flex flex-col rounded-[2rem] overflow-hidden">
+
+            <!-- Header -->
+            <div class="dt-header px-6 py-4 flex items-center justify-between">
+                <div>
+                    <h2 id="dt-title" class="dt-title">📊 Panel de Estadísticas</h2>
+                    <p  id="dt-subtitle" class="dt-subtitle">Datos en tiempo real • Firebase</p>
+                </div>
+                <div class="flex gap-2">
+                    <button id="dt-refresh-btn" onclick="loadDataTableContent()" class="dt-icon-btn">🔄 Actualizar</button>
+                    <button id="dt-close-btn"   onclick="closeDataTable()"       class="dt-icon-btn dt-close">Cerrar</button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div id="dt-stats" class="dt-stats-row px-6 py-3 flex gap-3">
+                <span class="dt-loading">Cargando datos...</span>
+            </div>
+
+            <!-- Events Section -->
+            <div class="px-6 pb-2 pt-1">
+                <p id="dt-events-title" class="dt-section-title">Eventos recientes</p>
+            </div>
+
+            <!-- Table (scrollable) -->
+            <div class="overflow-auto flex-1 px-4 pb-5">
+                <table class="dt-table w-full">
+                    <thead>
+                        <tr class="dt-thead-row">
+                            <th id="dt-col-type" class="dt-th">Tipo</th>
+                            <th id="dt-col-cat"  class="dt-th">Categoría</th>
+                            <th id="dt-col-sub"  class="dt-th">Sub</th>
+                            <th id="dt-col-lang" class="dt-th">Idioma</th>
+                            <th id="dt-col-time" class="dt-th">Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dt-table-body">
+                        <tr><td colspan="5" class="dt-loading-cell">Cargando datos...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- ════════════════════════════════════════════ -->
+
+
+    <!-- ═══ MAIN CARD ═══ -->
     <div id="main-container" class="card-main rounded-[2.5rem] max-w-md w-full text-center relative">
 
         <!-- =========== CREATOR VIEW =========== -->
@@ -94,7 +157,6 @@
             <!-- 2. PRANK SCREEN -->
             <div id="prank-screen" class="hidden py-4">
                 <div id="troll-visual" class="mb-3 animate-spin-slow" style="font-size:3.5rem">⚠️</div>
-                <!-- white-space:pre-wrap en CSS + textContent en JS = texto correcto -->
                 <div id="prank-text" class="terminal-box rounded-2xl text-left mb-6 terminal-cursor p-5"></div>
                 <div class="w-full bg-slate-100 rounded-full overflow-hidden mb-2 border border-slate-200" style="height:18px">
                     <div id="progress-bar" class="progress-glow h-full rounded-full" style="width:0%"></div>
@@ -160,7 +222,7 @@
 
                 </div><!-- /game-area -->
 
-                <!-- ★ TRIVIA 14 DE FEBRERO -->
+                <!-- TRIVIA 14 DE FEBRERO -->
                 <div id="trivia-area" class="hidden mb-5 p-4 trivia-card rounded-2xl">
                     <p id="trivia-question" class="font-black mb-4 text-purple-600 body-text">🤔 ¿Por qué se celebra el 14 de febrero?</p>
                     <div id="trivia-options" class="space-y-2">
@@ -195,5 +257,4 @@
     <script src="app.js"></script>
 </body>
 </html>
-
 
