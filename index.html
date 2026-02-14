@@ -15,10 +15,6 @@
     <meta name="twitter:description" content="Alguien pensó en ti hoy. ¡Toca para abrir tu dedicatoria! ❤️">
     <meta name="twitter:image"       content="https://thumbs.dreamstime.com/b/d-kawaii-valentines-day-gift-box-red-ribbon-heart-shaped-candies-golden-coins-soft-pink-clouds-glowing-stars-confetti-421078191.jpg">
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="styles.css">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -27,20 +23,13 @@
 
 <body class="min-h-screen flex items-center justify-center p-3 overflow-x-hidden">
 
-    <!-- LANG BUTTONS (4 idiomas) -->
-    <div class="fixed top-4 right-4 z-50 flex gap-2 flex-wrap justify-end max-w-xs">
-        <button onclick="changeLang('es')" id="btn-lang-es" class="lang-btn active px-3 py-2 rounded-full text-sm font-bold transition border backdrop-blur-sm">🇲🇽 ES</button>
-        <button onclick="changeLang('en')" id="btn-lang-en" class="lang-btn px-3 py-2 rounded-full text-sm font-bold transition border backdrop-blur-sm">🇺🇸 EN</button>
-        <button onclick="changeLang('fr')" id="btn-lang-fr" class="lang-btn px-3 py-2 rounded-full text-sm font-bold transition border backdrop-blur-sm">🇫🇷 FR</button>
-        <button onclick="changeLang('pt')" id="btn-lang-pt" class="lang-btn px-3 py-2 rounded-full text-sm font-bold transition border backdrop-blur-sm">🇧🇷 PT</button>
+    <!-- LANG -->
+    <div class="fixed top-4 right-4 z-50 flex gap-2">
+        <button onclick="changeLang('es')" id="btn-lang-es" class="lang-btn active px-4 py-2 rounded-full text-sm font-bold transition border backdrop-blur-sm">🇲🇽 ES</button>
+        <button onclick="changeLang('en')" id="btn-lang-en" class="lang-btn px-4 py-2 rounded-full text-sm font-bold transition border backdrop-blur-sm">🇺🇸 EN</button>
     </div>
 
-    <!-- STATS BUTTON -->
-    <button id="stats-btn" onclick="showDashboard()" class="stats-btn fixed top-4 left-4 z-50" title="Ver Estadísticas">
-        📊
-    </button>
-
-    <!-- MUSIC BUTTON -->
+    <!-- MUSIC -->
     <button id="music-btn" onclick="toggleMusic()" class="music-btn fixed bottom-6 left-4 z-50" title="Música">🎵</button>
 
     <!-- MAIN CARD -->
@@ -50,7 +39,7 @@
         <div id="creator-view" class="px-7 pt-8 pb-7">
             <div class="text-5xl mb-3 heartbeat">💝</div>
             <h1 id="ui-title"  class="page-title mb-1">MENSAJERÍA VIP</h1>
-            <p  id="ui-desc"   class="text-pink-500 mb-6 font-bold uppercase tracking-widest sub-desc">Personaliza tu envío 💕</p>
+            <p  id="ui-desc"   class="text-pink-500 mb-6 font-bold uppercase tracking-widest sub-desc">Personaliza tu envío 💝</p>
 
             <div class="space-y-4 text-left">
                 <div>
@@ -105,6 +94,7 @@
             <!-- 2. PRANK SCREEN -->
             <div id="prank-screen" class="hidden py-4">
                 <div id="troll-visual" class="mb-3 animate-spin-slow" style="font-size:3.5rem">⚠️</div>
+                <!-- white-space:pre-wrap en CSS + textContent en JS = texto correcto -->
                 <div id="prank-text" class="terminal-box rounded-2xl text-left mb-6 terminal-cursor p-5"></div>
                 <div class="w-full bg-slate-100 rounded-full overflow-hidden mb-2 border border-slate-200" style="height:18px">
                     <div id="progress-bar" class="progress-glow h-full rounded-full" style="width:0%"></div>
@@ -163,7 +153,7 @@
                         </div>
                         <p id="hug-progress-text" class="hint-text text-slate-500 mt-1 mb-1 font-mono"></p>
                         <div id="hug-done-msg" class="hidden fade-in">
-                            <div style="font-size:2.5rem;margin-bottom:4px">💕</div>
+                            <div style="font-size:2.5rem;margin-bottom:4px">💝</div>
                             <p id="hug-done-text" class="font-black text-amber-600 body-text">¡Deuda saldada!</p>
                         </div>
                     </div>
@@ -202,44 +192,7 @@
         </div><!-- /receiver-view -->
     </div><!-- /main-container -->
 
-    <!-- DASHBOARD MODAL -->
-    <div id="dashboard-modal" class="fixed inset-0 bg-black bg-opacity-70 z-[100] hidden items-center justify-center p-4" onclick="closeDashboard(event)">
-        <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6" onclick="event.stopPropagation()">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-2xl font-black text-slate-800">📊 Estadísticas en Tiempo Real</h2>
-                <button onclick="closeDashboard()" class="text-3xl text-slate-400 hover:text-slate-600 transition">&times;</button>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                <div class="bg-gradient-to-br from-pink-50 to-rose-50 p-5 rounded-2xl border-2 border-pink-200">
-                    <div class="text-3xl mb-2">💝</div>
-                    <div class="text-3xl font-black text-pink-600" id="total-messages">0</div>
-                    <div class="text-sm font-bold text-pink-500 uppercase tracking-wide">Mensajes Enviados</div>
-                </div>
-                <div class="bg-gradient-to-br from-purple-50 to-indigo-50 p-5 rounded-2xl border-2 border-purple-200">
-                    <div class="text-3xl mb-2">👀</div>
-                    <div class="text-3xl font-black text-purple-600" id="total-views">0</div>
-                    <div class="text-sm font-bold text-purple-500 uppercase tracking-wide">Vistas Totales</div>
-                </div>
-            </div>
-
-            <div class="mb-6">
-                <h3 class="text-lg font-black text-slate-700 mb-3">📈 Categorías Más Populares</h3>
-                <div id="categories-chart" class="space-y-2"></div>
-            </div>
-
-            <div class="mb-6">
-                <h3 class="text-lg font-black text-slate-700 mb-3">🌍 Idiomas Preferidos</h3>
-                <div id="languages-chart" class="space-y-2"></div>
-            </div>
-
-            <div>
-                <h3 class="text-lg font-black text-slate-700 mb-3">📝 Mensajes Recientes</h3>
-                <div id="recent-messages" class="space-y-2 max-h-60 overflow-y-auto"></div>
-            </div>
-        </div>
-    </div>
-
     <script src="app.js"></script>
 </body>
 </html>
+
